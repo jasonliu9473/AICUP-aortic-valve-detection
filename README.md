@@ -29,16 +29,35 @@ The following section explains about data preparation, training the model, makin
 
 
 ### Training the Model
-
+`TESTING_DATASET_PATH`
 
 ### Prediction
 #### 1. Classifying Testing Dataset
-> [!NOTE]
-> This step can be skipped, we use classification model in order to reduce outlier prediction.
+This part of step is divided into two parts, training, prediction, combining multiple folds prediction.\
+**Step 1**: Specify the parameter for training\
+`FOLD_NUM`,`EPOCH`,`BATCH_SIZE`, `LR`, `MODEL`
+
+**Step 2**: Specify the path\
+Specify DATASET_PATH`: 
+```
+<DATASET_PATH>
+|---fold_1
+|   |---training
+|   |---validation
+|   |---testing
+|---fold_2
+|       ⋮
+|---fold_K
+|---combined_testing_dataset
+
+```
 
 
 #### 2. Using the Prediction Model
-
+Specify classified dataset path
+```python
+CLASSIFIED_PATH="<CLASSIFIED_DATASET_PATH>/combined_testing_dataset"
+```
 
 ### Ensembling Prediction Results
 Specify the predicted results `.txt` file path from different models into the variable `prediction_list`, and the ensembled prediction into `output_file`

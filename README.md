@@ -110,16 +110,39 @@ The table above shows the approximate time needed to train the model for each fo
 
 ### III. Prediction
 #### 1. Filtering Dataset through Classification
-**STEP 1**: 
+Modifyable: `IMAGE_ROOT`,`LABEL_ROOT`,`OUTPUT_ROOT`,`CLASS_NAMES`,`MODEL_PATH`,`EPOCHS`,`BATCH`,`FOLDS_NUM`,`RANDOM_SEED`
+```python
+IMAGE_ROOT  = "./datasets/images"
+LABEL_ROOT  = "./datasets/labels"
+OUTPUT_ROOT = "./classification_dataset"
+MODEL_PATH  = "yolo11n-cls.pt"
+```
+
+|Training|Time(min)|
+|:---|:---:|
+|yolo11n-cls.pt|12.53|
 
 |Classify   |Time(ms)|
 |:----------|:------:|
-|Preprocess |  0.8   |
-|Inference  |  0.7   |
+|Preprocess |  0.7   |
+|Inference  |  0.3   |
 |Postprocess|  0.0   |
 
-**STEP 2**: 
+**STEP 1**: Prepare dataset\
+Separate the training files into 5 folds
 
+**STEP 2**: Training\
+Train model on each fold
+
+**STEP 3**: Filtering\
+From testing dataset, filter images with very low confidence.\
+Modifyable: `MODEL_PATHS`, `TEST_IMAGE_ROOT`, `OUTPUT_ROOT`, `CONFIDENCE_THRESHOLD`, `CLASS_NAMES`
+
+```python
+MODEL_PATHS     = ["path/to/cls-modelA.pt", "path/to/cls-modelB.pt", ⋯]
+TEST_IMAGE_ROOT = "./datasets/testing"
+OUTPUT_ROOT     = "path/to/classified/dataset/"
+```
 
 #### 2. Predicting using Filtered Dataset
 Specify the classified dataset path, trained model and output `.txt`.\

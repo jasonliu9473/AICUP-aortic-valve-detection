@@ -6,16 +6,40 @@ Our team members:
 - 劉家民 Jason Liu
 - 莊品謙 Pin-Chien Chuang
 
+The specification our hardware is as below
+| Hardware     | Specifications |
+|:-------------|:---------------|
+| OS  | Ubuntu 24.04 LTS|
+| GPU | RTX 5090 32GB|
+| RAM | 32GB |
+
+> [!NOTE]  
+> This code walkthrough is under **Jupyter Notebook** running on **Ubuntu linux**.
+
+The code that can be used is such as:
+
+`main.ipynb`: Main part of the code
+
+`aortic-classify.ipynb`: Filtering dataset code
+
+`other-models.ipynb`: Additional models that can be used/modify for further research
+
+
 ## Environment
-### Step 1
-First, we need to initiate a python virtual environment, as shown below:
+**STEP 1**\
+First, we need to initiate a python virtual environment, as shown below (Run the command in **bash**):
+```bash
+python3 -m venv <venv-name>
 ```
-pip -m venv <venv-name>
+After initialization, activate the virtual environment and install the required packages in `requirements.txt` (Run the command in **bash**).
+```bash
+source <venv-name>/bin/activate
+pip install -r requirements.txt
 ```
-After initialization, install the required packages in `requirement.txt`.
-### Step 2
-After installation for the additional packages, connect `<venv-name>` into Jupyter Notebook's kernel.
-```
+
+**STEP 2**\
+After installation for the additional packages, connect `<venv-name>` into Jupyter Notebook's kernel (Run the command in **bash**).
+```bash
 python -m ipykernel install --user --name=<venv-name> --display-name "<kernel-name>"
 ```
 `<venv-name>` : initialized python virtual environment
@@ -25,44 +49,101 @@ python -m ipykernel install --user --name=<venv-name> --display-name "<kernel-na
 ## Code Guide
 The following section explains about data preparation, training the model, making the prediction, and ensembling the prediction results for different models.
 
-### Preparing the Data
-
-
-### Training the Model
-`TESTING_DATASET_PATH`
-
-### Prediction
-#### 1. Classifying Testing Dataset
-This part of step is divided into two parts, training, prediction, combining multiple folds prediction.\
-**Step 1**: Specify the parameter for training\
-`FOLD_NUM`,`EPOCH`,`BATCH_SIZE`, `LR`, `MODEL`
-
-**Step 2**: Specify the path\
-Specify DATASET_PATH`: 
-```
-<DATASET_PATH>
-|---fold_1
-|   |---training
-|   |---validation
-|   |---testing
-|---fold_2
-|       ⋮
-|---fold_K
-|---combined_testing_dataset
-
+### I. Preparing the Data
+**STEP 1**\
+Unzip the training and testing dataset (Run the command in **bash**).
+```bash
+unzip -q training_image.zip -d .
+unzip -q training_label.zip -d .
+unzip -q testing_image.zip -d .
 ```
 
+**STEP 2**\
+Combine all of the training dataset into one directory.\
+Modifyable: `START`, `END`
+```
+datasets
+|---images
+|---labels
+```
 
-#### 2. Using the Prediction Model
-Specify classified dataset path
+**STEP 3**\
+Create a `.yaml` file for training and testing dataset.\
+Modifyable: `OUTPUT_ROOT`, `FOLDS`, `CLASS_NAME`
 ```python
-CLASSIFIED_PATH="<CLASSIFIED_DATASET_PATH>/combined_testing_dataset"
+OUTPUT_ROOT = './datasets_kfold/'
+CLASS_NAME  = 'aortic_valve'
 ```
 
-### Ensembling Prediction Results
-Specify the predicted results `.txt` file path from different models into the variable `prediction_list`, and the ensembled prediction into `output_file`
+If the dataset directory is similar to the example below, the dataset is ready to be passed on to train the model.
+```
+datasets_kfold
+|---fold_0
+|   |---train
+|   |   |---images
+|   |   |---labels
+|   |---val
+|   |---dataset_fold_0.yaml
+|---fold_1
+|      ⋮
+|---fold_6
+```
+
+
+### II. Training the Model
+Specify the hyperparameter to train the YOLO model.\
+Modifyable: `FOLD_NUM`,`EPOCH`,`BATCH`, `MODEL_PATH`, `CLASS_NAME`,`SAVE_PATH`,`DATASET_PATH`,`SKIP_MODEL`
+```python
+MODEL_PATH    = "yolo12x.pt"
+CLASS_NAME    = "aortic_valve"
+
+SAVE_PATH     = f"original_{i}"
+DATASET_PATH  = f"./datasets_kfold/fold_{i}/dataset_fold_{i}.yaml"
+```
+|Training|Time(hr)|
+|:-------|:------:|
+|Original|1.55    |
+|Box15   |2.06    |
+|Dropout |2.06    |
+
+The table above shows the approximate time needed to train the model for each fold
+
+### III. Prediction
+#### 1. Filtering Dataset through Classification
+**STEP 1**: 
+
+|Classify   |Time(ms)|
+|:----------|:------:|
+|Preprocess |  0.8   |
+|Inference  |  0.7   |
+|Postprocess|  0.0   |
+
+**STEP 2**: 
+
+
+#### 2. Predicting using Filtered Dataset
+Specify the classified dataset path, trained model and output `.txt`.\
+Modifyable: `FOLD_NUM`,`IOU`,`CONF`,`CLASSIFIED_PATH`,`TRAINED_MODEL_PATH`,`OUTPUT_FILE_NAME`,`SKIP_MODEL`
+
+```python
+CLASSIFIED_PATH    = 'path/to/classified/dataset/'
+TRAINED_MODEL_PATH = 'path/to/modelA.pt'
+OUTPUT_FILE_NAME   = 'predictionA.txt'
+```
+
+|Prediction |Time(ms)|
+|:----------|:------:|
+|Preprocess |  0.9   |
+|Inference  | 23.9   |
+|Postprocess|  0.3   |
+
+The table above shows the approximate time needed to do inference per image in milliseconds.
+
+### IV. Ensembling Prediction Results
+Specify the predicted results `.txt` file path from different models into the variable `prediction_list`, and the ensembled prediction into `output_file`.\
+Modifyable: `IMG_WIDTH`, `IMG_HEIGHT`, `prediction_list`, `IOU`, `CONF`,`output_files`
 
 ```python
 prediction_list = ["path/to/predictionA.txt", "path/to/predictionB.txt", ⋯]
-output_file = "ensembled_prediction_modelA_modelB.txt"
+output_file = 'ensembled_prediction_modelA_modelB.txt'
 ```

@@ -22,7 +22,7 @@ The code that can be used is such as:
 
 `aortic-classify.ipynb`: Filtering dataset code
 
-`other-models.ipynb`: Additional models that can be used/modify for further research
+`others`: Additional models that can be used/modify for further research
 
 
 ## Environment

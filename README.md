@@ -13,7 +13,7 @@ The specification our hardware is as below
 | GPU | RTX 5090 32GB|
 | RAM | 32GB |
 
-> [!NOTE]  
+> [!IMPORTANT]  
 > This code walkthrough is under **Jupyter Notebook** running on **Ubuntu linux**.
 
 The code that can be used is such as:
@@ -47,9 +47,17 @@ python -m ipykernel install --user --name=<venv-name> --display-name "<kernel-na
 `<kernel-name>` : kernel display name in Jupyter Notebook
 
 ## Code Guide
-The following section explains about data preparation, training the model, making the prediction, and ensembling the prediction results for different models.
+The following section explains about data preparation, training the model, making the prediction, and ensembling the prediction results for different models. The following image shows the structure of our code:
+![alt text](./code-structure.png)
 
-### I. Preparing the Data
+> [!NOTE]  
+> In order to get a better reduplication of our model, we suggest running data preparations block only once. This message includes `main.ipynb` and `aortic-classify.ipynb`.\
+> \
+> In addition `aortic-classify.ipynb` file code is only run once in order to use the same filtered testing dataset when doing inference on detector model.
+
+## Further explanation about our code:
+
+### I. Preparing the Data 
 **STEP 1**\
 Unzip the training and testing dataset (Run the command in **bash**).
 ```bash
@@ -58,17 +66,17 @@ unzip -q training_label.zip -d .
 unzip -q testing_image.zip -d .
 ```
 
-**STEP 2**\
+**STEP 2(a) `main.ipynb`**\
 Combine all of the training dataset into one directory.\
-Modifyable: `START`, `END`
+Modifyable: `START`, `END`, `IMG_ROOT`, `LBL_ROOT`
 ```
 datasets
 |---images
 |---labels
+|---testing
 ```
 
-**STEP 3**\
-Create a `.yaml` file for training and testing dataset.\
+Create a `.yaml` file for training dataset.\
 Modifyable: `OUTPUT_ROOT`, `FOLDS`, `CLASS_NAME`
 ```python
 OUTPUT_ROOT = './datasets_kfold/'
@@ -82,13 +90,36 @@ datasets_kfold
 |   |---train
 |   |   |---images
 |   |   |---labels
+|   |
 |   |---val
 |   |---dataset_fold_0.yaml
+|
 |---fold_1
 |      ⋮
 |---fold_6
 ```
 
+**STEP 2(b) `aortic-classify.ipynb`**\
+Combine all of the testing dataset into one directory.\
+Modifyable: `START`, `END`, `IMG_ROOT`
+
+Separate
+```
+|---fold_0
+|   |---train
+|   |   |---images
+|   |   |   |---positive
+|   |   |   |---negative
+|   |   |---labels
+|   |
+|   |---val
+|   |---dataset_fold_0.yaml
+|
+|---fold_1
+|      ⋮
+|---fold_6
+```
+The classified/filtered testing image will later be used when doing object detection.
 
 ### II. Training the Model
 Specify the hyperparameter to train the YOLO model.\

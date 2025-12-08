@@ -121,7 +121,7 @@ Separate
 ```
 The classified/filtered testing image will later be used when doing object detection.
 
-### II. Training the Model
+### II. Training the Model `main.ipynb`
 Specify the hyperparameter to train the YOLO model.\
 Modifyable: `FOLD_NUM`,`EPOCH`,`BATCH`, `MODEL_PATH`, `CLASS_NAME`,`SAVE_PATH`,`DATASET_PATH`,`SKIP_MODEL`
 ```python
@@ -140,7 +140,7 @@ DATASET_PATH  = f"./datasets_kfold/fold_{i}/dataset_fold_{i}.yaml"
 The table above shows the approximate time needed to train the model for each fold
 
 ### III. Prediction
-#### 1. Filtering Dataset through Classification
+#### 1. Filtering Dataset through Classification `aortic-classify.ipynb`
 Modifyable: `IMAGE_ROOT`,`LABEL_ROOT`,`OUTPUT_ROOT`,`CLASS_NAMES`,`MODEL_PATH`,`EPOCHS`,`BATCH`,`FOLDS_NUM`,`RANDOM_SEED`
 ```python
 IMAGE_ROOT  = "./datasets/images"
@@ -175,7 +175,7 @@ TEST_IMAGE_ROOT = "./datasets/testing"
 OUTPUT_ROOT     = "path/to/classified/dataset/"
 ```
 
-#### 2. Predicting using Filtered Dataset
+#### 2. Predicting using Filtered Dataset `main.ipynb`
 Specify the classified dataset path, trained model and output `.txt`.\
 Modifyable: `FOLD_NUM`,`IOU`,`CONF`,`CLASSIFIED_PATH`,`TRAINED_MODEL_PATH`,`OUTPUT_FILE_NAME`,`SKIP_MODEL`
 
@@ -193,7 +193,7 @@ OUTPUT_FILE_NAME   = 'predictionA.txt'
 
 The table above shows the approximate time needed to do inference per image in milliseconds.
 
-### IV. Ensembling Prediction Results
+### IV. Ensembling Prediction Results `main.ipynb`
 Specify the predicted results `.txt` file path from different models into the variable `prediction_list`, and the ensembled prediction into `output_file`.\
 Modifyable: `IMG_WIDTH`, `IMG_HEIGHT`, `prediction_list`, `IOU`, `CONF`,`output_files`
 

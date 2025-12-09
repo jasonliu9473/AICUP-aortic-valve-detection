@@ -9,9 +9,12 @@ Our team members:
 The specification our hardware is as below
 | Hardware     | Specifications |
 |:-------------|:---------------|
-| OS  | Ubuntu 24.04 LTS|
-| GPU | RTX 5090 32GB|
-| RAM | 32GB |
+| OS   | Ubuntu 24.04 LTS|
+| CPU  | Intel Core  i9-14900K |
+| RAM  | 32GB |
+| GPU  | RTX 5090 32GB (Cuda Version: 13.0)|
+
+
 
 > [!IMPORTANT]  
 > This code walkthrough is under **Jupyter Notebook** running on **Ubuntu linux**.
